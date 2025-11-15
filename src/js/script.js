@@ -245,6 +245,15 @@ class Game {
         localStorage.setItem('bakery2048-bestScore', this.bestScore.toString());
     }
 
+    resetGame() {
+        this.score = 0;
+        this.grid = this.createEmptyGrid();
+        this.spawnRandomTile();
+        this.spawnRandomTile();
+        this.updateScore();
+        this.draw();
+    }
+
 
     setupInput() {
         // keyboard input for arrow keys
@@ -254,6 +263,14 @@ class Game {
                 this.handleMove(e.key);
             }
         });
+
+        // button input for reset
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                this.resetGame();
+            });
+        }
     }
 }
 
