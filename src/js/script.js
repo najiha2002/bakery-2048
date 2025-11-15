@@ -78,9 +78,145 @@ class Game {
         }
     }
 
+    // handle move in given direction based on arrow key input
+    handleMove(direction) {
+        let moved = false;
+        const previousGrid = JSON.parse(JSON.stringify(this.grid));
+
+        // perform move based on direction
+        switch(direction) {
+            case 'ArrowLeft':
+                moved = this.moveLeft();
+                break;
+            case 'ArrowRight':
+                moved = this.moveRight();
+                break;
+            case 'ArrowUp':
+                moved = this.moveUp();
+                break;
+            case 'ArrowDown':
+                moved = this.moveDown();
+                break;
+        }
+
+        // after tiles are moved, spawn new tile and redraw
+        if (moved) {
+            this.spawnRandomTile();
+            this.draw(); // redraw grid with updated tiles
+        }
+    }
+
+    // move tiles left
+    moveLeft() {
+        let moved = false;
+
+        // loop thru each row
+        for (let i = 0; i < GRID_SIZE; i++) {
+            const row = this.grid[i];
+            const newRow = this.mergeLine(row); // merge the row
+
+            // check if row changed
+            // if arrow is clicked but row doesnt change (due to full row etc.), consider move still false
+            if (JSON.stringify(row) !== JSON.stringify(newRow)) {
+                moved = true;
+            }
+            this.grid[i] = newRow;
+        }
+        return moved;
+    }
+
+    // move tiles right
+    moveRight() {
+        let moved = false;
+        // similar to moveLeft but reverse the row first
+        for (let i = 0; i < GRID_SIZE; i++) {
+            const row = this.grid[i];
+            const reversedRow = row.slice().reverse();
+            const newRow = this.mergeLine(reversedRow);
+            const finalRow = newRow.reverse();
+            if (JSON.stringify(row) !== JSON.stringify(finalRow)) {
+                moved = true;
+            }
+            this.grid[i] = finalRow;
+        }
+        return moved;
+    }
+
+    // move tiles up
+    moveUp() {
+        let moved = false;
+
+        // loop thru each column
+        for (let j = 0; j < GRID_SIZE; j++) {
+            const column = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                column.push(this.grid[i][j]);
+            }
+            const newColumn = this.mergeLine(column);
+            for (let i = 0; i < GRID_SIZE; i++) {
+                if (this.grid[i][j] !== newColumn[i]) {
+                    moved = true;
+                }
+                this.grid[i][j] = newColumn[i];
+            }
+        }
+        return moved;
+    }
+
+    // move tiles down
+    moveDown() {
+        let moved = false;
+        for (let j = 0; j < GRID_SIZE; j++) {
+            const column = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                column.push(this.grid[i][j]);
+            }
+            const reversedColumn = column.slice().reverse();
+            const newColumn = this.mergeLine(reversedColumn);
+            const finalColumn = newColumn.reverse();
+            for (let i = 0; i < GRID_SIZE; i++) {
+                if (this.grid[i][j] !== finalColumn[i]) {
+                    moved = true;
+                }
+                this.grid[i][j] = finalColumn[i];
+            }
+        }
+        return moved;
+    }
+
+    // merge a line (row or column) of tiles if any
+    mergeLine(line) {
+        // remove zeros (slide tiles)
+        let filtered = line.filter(val => val !== 0); // eg [2, 0, 2, 4] => [2, 2, 4]
+        
+        // merge adjacent equal values
+        for (let i = 0; i < filtered.length - 1; i++) {
+            if (filtered[i] === filtered[i + 1]) {
+                filtered[i] *= 2; // double the value
+                filtered[i + 1] = 0;
+            }
+        } // eg [2, 2, 4] => [4, 0, 4]
+        
+        // remove zeros again after merging (slide tiles)
+        filtered = filtered.filter(val => val !== 0); // eg [4, 0, 4] => [4, 4]
+        
+        // fill with zeros to maintain grid size
+        while (filtered.length < GRID_SIZE) {
+            filtered.push(0);
+        } // [4, 4] => [4, 4, 0, 0]
+        
+        return filtered;
+    }
+
+
     setupInput() {
-        //placeholder for input setup
-        console.log('to be implemented');
+        // keyboard input for arrow keys
+        document.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                this.handleMove(e.key);
+            }
+        });
     }
 }
 
