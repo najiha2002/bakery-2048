@@ -84,12 +84,26 @@ class Game {
         this.context.fill();
         
         if (value !== 0) {
-            this.context.fillStyle = '#776e65';
-            this.context.font = 'bold 40px Arial';
-            this.context.textAlign = 'center';
-            this.context.textBaseline = 'middle';
-            this.context.fillText(value, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
-            this.context.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            const tileInfo = TILE_LABELS[value];
+            if (tileInfo) {
+                // draw emoji
+                this.context.font = '40px Arial';
+                this.context.textAlign = 'center';
+                this.context.textBaseline = 'middle';
+                this.context.fillText(tileInfo.emoji, x + TILE_SIZE / 2, y + TILE_SIZE / 2 - 8);
+                
+                // draw name text
+                this.context.fillStyle = '#776e65';
+                this.context.font = 'bold 11px Arial';
+                this.context.fillText(tileInfo.name, x + TILE_SIZE / 2, y + TILE_SIZE / 2 + 24);
+            } else {
+                // fallback to number if no label
+                this.context.fillStyle = '#776e65';
+                this.context.font = 'bold 40px Arial';
+                this.context.textAlign = 'center';
+                this.context.textBaseline = 'middle';
+                this.context.fillText(value, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
+            }
         }
     }
 
