@@ -8,20 +8,27 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bakery 2048</h1>
+        <h1>🥐Bakery 2048🥐</h1>
+        <p class="subtitle">Combine ingredients to create delicious treats!</p>
         <div class="scores">
             <div class="score-container">
-                <div class="score-label">Score</div>
+                <div class="score-label">SCORE</div>
                 <div id="score" class="score-value">0</div>
             </div>
             <div class="score-container">
-                <div class="score-label">Best</div>
+                <div class="score-label">BEST</div>
                 <div id="bestScore" class="score-value">0</div>
             </div>
-            <button id="resetButton">New Game</button>
         </div>
-        <canvas id="gameCanvas" width="500" height="500"></canvas>
+        <div class="game-board">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+        </div>
+        
+        <button id="resetButton">New Game</button>
     </div>
+    <footer>
+        <p>Built by Najiha. Inspired by the classic 2048 game.</p>
+    </footer>
     <script src="src/js/constants.js"></script>
     <script src="src/js/utils.js"></script>
     <script src="src/js/script.js"></script>

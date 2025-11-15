@@ -1,6 +1,115 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #faf8ef;
+    padding: 20px 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.scores {
+    display: flex;
+    gap: 15px;
+}
+
+.score-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    width: 100px;
+}
+
+.score-label {
+    font-size: 12px;
+    color: #706b65;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.score-value {
+    font-size: 24px;
+    color: #302e2c;
+    font-weight: bold;
+}
+
+.game-board {
+    background-color: #bbada0;
+    border-radius: 8px;
+    padding: 2px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 48px;
+    margin-bottom: 0px;
+    color: #302e2c;
+    text-align: center;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #6e6966;
+    margin-top: -10px;
+    margin-bottom: 4px;
+    font-weight: 400;
+}
+
 canvas {
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    display: block;
+    border-radius: 6px;
+    margin: 0 auto;
+}
+
+#resetButton {
+    background-color: #302e2c;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#resetButton:hover {
+    background-color: #56534f;
+}
+
+#resetButton:active {
+    background-color: #4f4c48;
+}
+
+footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #6e6966;
+    font-size: 14px;
+}
+
+footer p {
+    margin: 0;
 }
