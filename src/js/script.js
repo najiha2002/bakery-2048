@@ -14,11 +14,16 @@ class Game {
         this.canvas.style.width = rect.width + 'px';
         this.canvas.style.height = rect.height + 'px';
 
+        // initialize game state
+        this.score = 0;
+        this.bestScore = this.loadBestScore();
         this.grid = this.createEmptyGrid();
+        
         // Spawn two initial tiles
         this.spawnRandomTile();
         this.spawnRandomTile();
         this.draw();
+        this.updateScore();
         this.setupInput();
     }
 
@@ -78,9 +83,232 @@ class Game {
         }
     }
 
+    // handle move in given direction based on arrow key input
+    handleMove(direction) {
+        let moved = false;
+        const previousGrid = JSON.parse(JSON.stringify(this.grid));
+
+        // perform move based on direction
+        switch(direction) {
+            case 'ArrowLeft':
+                moved = this.moveLeft();
+                break;
+            case 'ArrowRight':
+                moved = this.moveRight();
+                break;
+            case 'ArrowUp':
+                moved = this.moveUp();
+                break;
+            case 'ArrowDown':
+                moved = this.moveDown();
+                break;
+        }
+
+        // after tiles are moved, spawn new tile and redraw
+        if (moved) {
+            this.spawnRandomTile();
+            this.updateScore(); // Update score display
+            this.draw(); // redraw grid with updated tiles
+            
+            // check win/game over conditions
+            if (this.checkWin()) {
+                alert('Congratulations! You reached 2048!');
+            } else if (this.checkGameOver()) {
+                alert('Game Over! No more moves possible.');
+            }
+        }
+    }
+
+    // move tiles left
+    moveLeft() {
+        let moved = false;
+
+        // loop thru each row
+        for (let i = 0; i < GRID_SIZE; i++) {
+            const row = this.grid[i];
+            const newRow = this.mergeLine(row); // merge the row
+
+            // check if row changed
+            // if arrow is clicked but row doesnt change (due to full row etc.), consider move still false
+            if (JSON.stringify(row) !== JSON.stringify(newRow)) {
+                moved = true;
+            }
+            this.grid[i] = newRow;
+        }
+        return moved;
+    }
+
+    // move tiles right
+    moveRight() {
+        let moved = false;
+        // similar to moveLeft but reverse the row first
+        for (let i = 0; i < GRID_SIZE; i++) {
+            const row = this.grid[i];
+            const reversedRow = row.slice().reverse();
+            const newRow = this.mergeLine(reversedRow);
+            const finalRow = newRow.reverse();
+            if (JSON.stringify(row) !== JSON.stringify(finalRow)) {
+                moved = true;
+            }
+            this.grid[i] = finalRow;
+        }
+        return moved;
+    }
+
+    // move tiles up
+    moveUp() {
+        let moved = false;
+
+        // loop thru each column
+        for (let j = 0; j < GRID_SIZE; j++) {
+            const column = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                column.push(this.grid[i][j]);
+            }
+            const newColumn = this.mergeLine(column);
+            for (let i = 0; i < GRID_SIZE; i++) {
+                if (this.grid[i][j] !== newColumn[i]) {
+                    moved = true;
+                }
+                this.grid[i][j] = newColumn[i];
+            }
+        }
+        return moved;
+    }
+
+    // move tiles down
+    moveDown() {
+        let moved = false;
+        for (let j = 0; j < GRID_SIZE; j++) {
+            const column = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                column.push(this.grid[i][j]);
+            }
+            const reversedColumn = column.slice().reverse();
+            const newColumn = this.mergeLine(reversedColumn);
+            const finalColumn = newColumn.reverse();
+            for (let i = 0; i < GRID_SIZE; i++) {
+                if (this.grid[i][j] !== finalColumn[i]) {
+                    moved = true;
+                }
+                this.grid[i][j] = finalColumn[i];
+            }
+        }
+        return moved;
+    }
+
+    // merge a line (row or column) of tiles if any
+    mergeLine(line) {
+        // remove zeros (slide tiles)
+        let filtered = line.filter(val => val !== 0); // eg [2, 0, 2, 4] => [2, 2, 4]
+        
+        // merge adjacent equal values
+        for (let i = 0; i < filtered.length - 1; i++) {
+            if (filtered[i] === filtered[i + 1]) {
+                filtered[i] *= 2; // double the value
+                filtered[i + 1] = 0;
+                this.score += filtered[i]; // add merged value to score
+            }
+        } // eg [2, 2, 4] => [4, 0, 4]
+        
+        // remove zeros again after merging (slide tiles)
+        filtered = filtered.filter(val => val !== 0); // eg [4, 0, 4] => [4, 4]
+        
+        // fill with zeros to maintain grid size
+        while (filtered.length < GRID_SIZE) {
+            filtered.push(0);
+        } // [4, 4] => [4, 4, 0, 0]
+        
+        return filtered;
+    }
+
+    // update score display
+    updateScore() {
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+            scoreElement.textContent = this.score;
+        }
+        
+        // update best score if current score is higher
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            this.saveBestScore();
+        }
+        
+        const bestScoreElement = document.getElementById('bestScore');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore;
+        }
+    }
+
+    checkGameOver() {
+        // check if any moves are possible
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                if (this.grid[i][j] === 0) {
+                    return false; // empty cell found, game not over
+                }
+                // check right neighbor
+                if (j < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i][j + 1]) {
+                    return false;
+                }
+                // check down neighbor
+                if (i < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i + 1][j]) {
+                    return false;
+                }
+            }
+        }
+        return true; // no moves left, game over
+    }
+
+    checkWin() {
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                if (this.grid[i][j] === 2048) {
+                    return true; // player has won
+                }
+            }
+        }
+        return false;
+    }
+
+    // Load best score from localStorage
+    loadBestScore() {
+        const saved = localStorage.getItem('bakery2048-bestScore');
+        return saved ? parseInt(saved) : 0;
+    }
+
+    // Save best score to localStorage
+    saveBestScore() {
+        localStorage.setItem('bakery2048-bestScore', this.bestScore.toString());
+    }
+
+    resetGame() {
+        this.score = 0;
+        this.grid = this.createEmptyGrid();
+        this.spawnRandomTile();
+        this.spawnRandomTile();
+        this.updateScore();
+        this.draw();
+    }
+
+
     setupInput() {
-        //placeholder for input setup
-        console.log('to be implemented');
+        // keyboard input for arrow keys
+        document.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                this.handleMove(e.key);
+            }
+        });
+
+        // button input for reset
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                this.resetGame();
+            });
+        }
     }
 }
 

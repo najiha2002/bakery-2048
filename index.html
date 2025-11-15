@@ -7,8 +7,21 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-    <h1>Bakery 2048</h1>
-    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <div class="container">
+        <h1>Bakery 2048</h1>
+        <div class="scores">
+            <div class="score-container">
+                <div class="score-label">Score</div>
+                <div id="score" class="score-value">0</div>
+            </div>
+            <div class="score-container">
+                <div class="score-label">Best</div>
+                <div id="bestScore" class="score-value">0</div>
+            </div>
+            <button id="resetButton">New Game</button>
+        </div>
+        <canvas id="gameCanvas" width="500" height="500"></canvas>
+    </div>
     <script src="src/js/constants.js"></script>
     <script src="src/js/utils.js"></script>
     <script src="src/js/script.js"></script>
