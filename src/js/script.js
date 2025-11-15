@@ -109,6 +109,13 @@ class Game {
             this.spawnRandomTile();
             this.updateScore(); // Update score display
             this.draw(); // redraw grid with updated tiles
+            
+            // check win/game over conditions
+            if (this.checkWin()) {
+                alert('Congratulations! You reached 2048!');
+            } else if (this.checkGameOver()) {
+                alert('Game Over! No more moves possible.');
+            }
         }
     }
 
