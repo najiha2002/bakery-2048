@@ -234,6 +234,26 @@ class Game {
         }
     }
 
+    gameOver() {
+        // check if any moves are possible
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                if (this.grid[i][j] === 0) {
+                    return false; // empty cell found, game not over
+                }
+                // check right neighbor
+                if (j < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i][j + 1]) {
+                    return false;
+                }
+                // check down neighbor
+                if (i < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i + 1][j]) {
+                    return false;
+                }
+            }
+        }
+        return true; // no moves left, game over
+    }
+
     // Load best score from localStorage
     loadBestScore() {
         const saved = localStorage.getItem('bakery2048-bestScore');
