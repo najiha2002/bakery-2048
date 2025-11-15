@@ -7,7 +7,9 @@
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     min-height: 100vh;
     background-color: #faf8ef;
     padding: 20px 0;
@@ -98,5 +100,16 @@ canvas {
 }
 
 #resetButton:active {
-    background-color: #b48282;
+    background-color: #4f4c48;
+}
+
+footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #6e6966;
+    font-size: 14px;
+}
+
+footer p {
+    margin: 0;
 }
