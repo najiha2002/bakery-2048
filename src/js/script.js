@@ -14,11 +14,15 @@ class Game {
         this.canvas.style.width = rect.width + 'px';
         this.canvas.style.height = rect.height + 'px';
 
+        // initialize game state
+        this.score = 0;
         this.grid = this.createEmptyGrid();
+        
         // Spawn two initial tiles
         this.spawnRandomTile();
         this.spawnRandomTile();
         this.draw();
+        this.updateScore();
         this.setupInput();
     }
 
@@ -102,6 +106,7 @@ class Game {
         // after tiles are moved, spawn new tile and redraw
         if (moved) {
             this.spawnRandomTile();
+            this.updateScore(); // Update score display
             this.draw(); // redraw grid with updated tiles
         }
     }
@@ -194,6 +199,7 @@ class Game {
             if (filtered[i] === filtered[i + 1]) {
                 filtered[i] *= 2; // double the value
                 filtered[i + 1] = 0;
+                this.score += filtered[i]; // add merged value to score
             }
         } // eg [2, 2, 4] => [4, 0, 4]
         
@@ -206,6 +212,14 @@ class Game {
         } // [4, 4] => [4, 4, 0, 0]
         
         return filtered;
+    }
+
+    // update score display
+    updateScore() {
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+            scoreElement.textContent = this.score;
+        }
     }
 
 
