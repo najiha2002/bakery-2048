@@ -234,7 +234,7 @@ class Game {
         }
     }
 
-    gameOver() {
+    checkGameOver() {
         // check if any moves are possible
         for (let i = 0; i < GRID_SIZE; i++) {
             for (let j = 0; j < GRID_SIZE; j++) {
@@ -252,6 +252,17 @@ class Game {
             }
         }
         return true; // no moves left, game over
+    }
+
+    checkWin() {
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                if (this.grid[i][j] === 2048) {
+                    return true; // player has won
+                }
+            }
+        }
+        return false;
     }
 
     // Load best score from localStorage
