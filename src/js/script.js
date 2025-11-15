@@ -16,6 +16,7 @@ class Game {
 
         // initialize game state
         this.score = 0;
+        this.bestScore = this.loadBestScore();
         this.grid = this.createEmptyGrid();
         
         // Spawn two initial tiles
@@ -220,6 +221,28 @@ class Game {
         if (scoreElement) {
             scoreElement.textContent = this.score;
         }
+        
+        // update best score if current score is higher
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            this.saveBestScore();
+        }
+        
+        const bestScoreElement = document.getElementById('bestScore');
+        if (bestScoreElement) {
+            bestScoreElement.textContent = this.bestScore;
+        }
+    }
+
+    // Load best score from localStorage
+    loadBestScore() {
+        const saved = localStorage.getItem('bakery2048-bestScore');
+        return saved ? parseInt(saved) : 0;
+    }
+
+    // Save best score to localStorage
+    saveBestScore() {
+        localStorage.setItem('bakery2048-bestScore', this.bestScore.toString());
     }
 
 
