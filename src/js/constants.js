@@ -1,7 +1,7 @@
 const GRID_SIZE = 4;
-const CANVAS_SIZE = 500;
-const TILE_SIZE = 100;
-const TILE_GAP = 15;
+const CANVAS_SIZE = 400;
+const TILE_SIZE = 85;
+const TILE_GAP = 12;
 // tbc
 const COLORS = {
     background: '#faf8ef',

@@ -5,14 +5,13 @@ class Game {
 
         // ensure crisp rendering on high-DPI displays
         const dpr = window.devicePixelRatio || 1;
-        const rect = this.canvas.getBoundingClientRect();
         
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
+        this.canvas.width = CANVAS_SIZE * dpr;
+        this.canvas.height = CANVAS_SIZE * dpr;
         this.context.scale(dpr, dpr);
         
-        this.canvas.style.width = rect.width + 'px';
-        this.canvas.style.height = rect.height + 'px';
+        this.canvas.style.width = CANVAS_SIZE + 'px';
+        this.canvas.style.height = CANVAS_SIZE + 'px';
 
         // initialize game state
         this.score = 0;
@@ -61,7 +60,11 @@ class Game {
 
     // draw the entire game grid
     draw() {
-        this.context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        // Fill canvas background with grid color
+        this.context.fillStyle = '#bbada0';
+        this.context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        
+        // Draw tiles
         for (let i = 0; i < GRID_SIZE; i++) {
             for (let j = 0; j < GRID_SIZE; j++) {
                 this.drawTile(i, j, this.grid[i][j]);
@@ -72,14 +75,21 @@ class Game {
     drawTile(row, col, value) {
         const x = Math.floor(col * (TILE_SIZE + TILE_GAP) + TILE_GAP);
         const y = Math.floor(row * (TILE_SIZE + TILE_GAP) + TILE_GAP);
+        const radius = 6;
+        
+        // Draw rounded rectangle with fill
         this.context.fillStyle = COLORS[value] || '#cdc1b4';
-        this.context.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+        this.context.beginPath();
+        this.context.roundRect(x, y, TILE_SIZE, TILE_SIZE, radius);
+        this.context.fill();
+        
         if (value !== 0) {
             this.context.fillStyle = '#776e65';
             this.context.font = 'bold 40px Arial';
             this.context.textAlign = 'center';
             this.context.textBaseline = 'middle';
             this.context.fillText(value, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
+            this.context.shadowColor = 'rgba(0, 0, 0, 0.6)';
         }
     }
 
