@@ -2,6 +2,18 @@ class Game {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         this.context = this.canvas.getContext('2d');
+
+        // ensure crisp rendering on high-DPI displays
+        const dpr = window.devicePixelRatio || 1;
+        const rect = this.canvas.getBoundingClientRect();
+        
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.context.scale(dpr, dpr);
+        
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+
         this.grid = this.createEmptyGrid();
         // Spawn two initial tiles
         this.spawnRandomTile();
@@ -53,8 +65,8 @@ class Game {
     }
 
     drawTile(row, col, value) {
-        const x = col * (TILE_SIZE + TILE_GAP) + TILE_GAP;
-        const y = row * (TILE_SIZE + TILE_GAP) + TILE_GAP;
+        const x = Math.floor(col * (TILE_SIZE + TILE_GAP) + TILE_GAP);
+        const y = Math.floor(row * (TILE_SIZE + TILE_GAP) + TILE_GAP);
         this.context.fillStyle = COLORS[value] || '#cdc1b4';
         this.context.fillRect(x, y, TILE_SIZE, TILE_SIZE);
         if (value !== 0) {
