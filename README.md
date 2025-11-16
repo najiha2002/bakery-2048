@@ -1,4 +1,4 @@
-<img width="529" height="688" alt="image" src="https://github.com/user-attachments/assets/580e142d-03fd-476c-a5fd-12488101e554" /># 🥐 Bakery 2048
+# 🥐 Bakery 2048
 
 A delicious twist on the classic 2048 game! Combine ingredients to create amazing bakery treats.
 
