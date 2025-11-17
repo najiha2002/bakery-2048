@@ -18,11 +18,20 @@ class Game {
         this.bestScore = this.loadBestScore();
         this.grid = this.createEmptyGrid();
         
+        // timer variables
+        this.timeLimit = 420; // 7 minutes in seconds
+        this.timeRemaining = this.timeLimit;
+        this.timerInterval = null;
+        this.gameOver = false;
+        this.gameWon = false;
+        this.timerStarted = false; // track if timer has started
+        
         // Spawn two initial tiles
         this.spawnRandomTile();
         this.spawnRandomTile();
         this.draw();
         this.updateScore();
+        this.updateTimerDisplay(); // show initial time without starting countdown
         this.setupInput();
     }
 
@@ -109,6 +118,14 @@ class Game {
 
     // handle move in given direction based on arrow key input
     handleMove(direction) {
+        if (this.gameOver || this.gameWon) return; // prevent moves after game ends
+        
+        // start timer on first move
+        if (!this.timerStarted) {
+            this.startTimer();
+            this.timerStarted = true;
+        }
+        
         let moved = false;
         const previousGrid = JSON.parse(JSON.stringify(this.grid));
 
@@ -135,10 +152,18 @@ class Game {
             this.draw(); // redraw grid with updated tiles
             
             // check win/game over conditions
-            if (this.checkWin()) {
-                alert('Congratulations! You reached 2048!');
-            } else if (this.checkGameOver()) {
-                alert('Game Over! No more moves possible.');
+            if (this.checkWin() && !this.gameWon) {
+                this.gameWon = true;
+                this.stopTimer();
+                setTimeout(() => {
+                    alert('🎉 Congratulations! You reached the Whole Cake! 🥧\nTime: ' + this.formatTime(this.timeLimit - this.timeRemaining));
+                }, 100);
+            } else if (this.checkGameOver() && !this.gameOver) {
+                this.gameOver = true;
+                this.stopTimer();
+                setTimeout(() => {
+                    alert('Game Over! No more moves possible.');
+                }, 100);
             }
         }
     }
@@ -265,6 +290,46 @@ class Game {
         }
     }
 
+    // timer functions
+    startTimer() {
+        this.updateTimerDisplay();
+        this.timerInterval = setInterval(() => {
+            if (this.timeRemaining > 0) {
+                this.timeRemaining--;
+                this.updateTimerDisplay();
+                
+                // time's up
+                if (this.timeRemaining === 0) {
+                    this.gameOver = true;
+                    this.stopTimer();
+                    setTimeout(() => {
+                        alert('⏰ Time\'s Up! You didn\'t reach the Pie in time.\nFinal Score: ' + this.score);
+                    }, 100);
+                }
+            }
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    updateTimerDisplay() {
+        const timerElement = document.getElementById('timer');
+        if (timerElement) {
+            timerElement.textContent = this.formatTime(this.timeRemaining);
+        }
+    }
+
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
     checkGameOver() {
         // check if any moves are possible
         for (let i = 0; i < GRID_SIZE; i++) {
@@ -308,11 +373,17 @@ class Game {
     }
 
     resetGame() {
+        this.stopTimer();
         this.score = 0;
         this.grid = this.createEmptyGrid();
+        this.gameOver = false;
+        this.gameWon = false;
+        this.timerStarted = false;
+        this.timeRemaining = this.timeLimit;
         this.spawnRandomTile();
         this.spawnRandomTile();
         this.updateScore();
+        this.updateTimerDisplay();
         this.draw();
     }
 
