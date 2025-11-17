@@ -303,7 +303,7 @@ class Game {
                     this.gameOver = true;
                     this.stopTimer();
                     setTimeout(() => {
-                        alert('⏰ Time\'s Up! You didn\'t reach the Pie in time.\nFinal Score: ' + this.score);
+                        alert('⏰ Time\'s Up! You didn\'t reach the Whole Cake in time.\nFinal Score: ' + this.score);
                     }, 100);
                 }
             }
@@ -353,7 +353,7 @@ class Game {
     checkWin() {
         for (let i = 0; i < GRID_SIZE; i++) {
             for (let j = 0; j < GRID_SIZE; j++) {
-                if (this.grid[i][j] === 2048) {
+                if (this.grid[i][j] === 512) {
                     return true; // player has won
                 }
             }
