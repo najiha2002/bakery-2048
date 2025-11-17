@@ -134,8 +134,28 @@ h1 {
     font-size: 16px;
     color: #6e6966;
     margin-top: -10px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     font-weight: 400;
+}
+
+.challenge-info {
+    font-size: 14px;
+    color: #ff6b6b;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background-color: #ffe0e0;
+    border-radius: 6px;
+    border: 2px solid #ffcaca;
+}
+
+.timer-container {
+    background-color: #ffe0e0 !important;
+    border: 2px solid #ffcaca;
+}
+
+.timer-container .score-value {
+    color: #ff6b6b !important;
 }
 
 canvas {

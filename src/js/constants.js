@@ -14,9 +14,6 @@ const TILE_LABELS = {
     128: { emoji: '🧁', name: 'Cupcake' },
     256: { emoji: '🍰', name: 'Slice Cake' },
     512: { emoji: '🎂', name: 'Whole Cake' },
-    1024: { emoji: '🥐', name: 'Croissant' },
-    2048: { emoji: '🥧', name: 'Pie' },
-    4096: { emoji: '👨‍🍳', name: 'MasterChef' }
 };
 
 const COLORS = {
