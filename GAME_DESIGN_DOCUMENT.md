@@ -116,14 +116,16 @@ Players progress through 12 ingredient levels:
 ```
 bakery-2048/
 ├── index.html              # Main HTML file
+├── package.json            # NPM dependencies and test scripts
 ├── README.md              # Project documentation
 ├── GAME_DESIGN_DOCUMENT.md # This document
 ├── src/
-│   ├── style.css          # Styling
-│   └── js/
-│       ├── constants.js   # Game constants & colors
-│       ├── script.js      # Core game logic
-        └── utils.js       
+│   ├── style.css          # Game styling
+│   ├── js/
+│   │   ├── constants.js   # Game constants & tile definitions
+│   │   └── script.js      # Core game logic (Game class)
+│   └── tests/
+│       └── game.test.js   # Jest unit tests
 ```
 
 ### 5.3 Key Classes & Functions

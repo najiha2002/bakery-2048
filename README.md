@@ -32,13 +32,17 @@ cd bakery-2048
 
 ```
 bakery-2048/
-├── index.html          # Main HTML file
+├── index.html              # Main HTML file
+├── package.json            # NPM dependencies and scripts
+├── README.md              # Project documentation
+├── GAME_DESIGN_DOCUMENT.md # Comprehensive game design specs
 ├── src/
-│   ├── style.css       # Styling
-│   └── js/
-│       ├── constants.js    # Game constants and colors
-│       └── script.js        # Game logic 
-└── README.md
+│   ├── style.css          # Game styling
+│   ├── js/
+│   │   ├── constants.js   # Game constants and tile definitions
+│   │   └── script.js      # Main game logic and Game class
+│   └── tests/
+│       └── game.test.js   # Jest unit tests for game logic
 ```
 
 ## 🎯 Game Mechanics
