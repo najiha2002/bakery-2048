@@ -138,6 +138,13 @@ h1 {
     font-weight: 400;
 }
 
+.instructions {
+    font-size: 13px;
+    color: #8a8583;
+    margin-top: -2px;
+    font-style: italic;
+}
+
 .challenge-info {
     font-size: 14px;
     color: #ff6b6b;
