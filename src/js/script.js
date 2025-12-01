@@ -26,6 +26,11 @@ class Game {
         this.gameWon = false;
         this.timerStarted = false; // track if timer has started
         
+        // initialize game stats tracking
+        if (window.gameStats) {
+            window.gameStats.startGame()
+        }
+        
         // Spawn two initial tiles
         this.spawnRandomTile();
         this.spawnRandomTile();
@@ -151,18 +156,31 @@ class Game {
             this.updateScore(); // Update score display
             this.draw(); // redraw grid with updated tiles
             
+            // track move in stats
+            if (window.gameStats) {
+                window.gameStats.recordMove()
+            }
+            
             // check win/game over conditions
             if (this.checkWin() && !this.gameWon) {
                 this.gameWon = true;
                 this.stopTimer();
                 setTimeout(() => {
                     alert('🎉 Congratulations! You reached the Whole Cake! 🥧\nTime: ' + this.formatTime(this.timeLimit - this.timeRemaining));
+                    // save win to backend
+                    if (window.gameStats) {
+                        window.gameStats.saveGameResult(this.score, true)
+                    }
                 }, 100);
             } else if (this.checkGameOver() && !this.gameOver) {
                 this.gameOver = true;
                 this.stopTimer();
                 setTimeout(() => {
                     alert('Game Over! No more moves possible.');
+                    // save loss to backend
+                    if (window.gameStats) {
+                        window.gameStats.saveGameResult(this.score, false)
+                    }
                 }, 100);
             }
         }
@@ -288,6 +306,12 @@ class Game {
         if (bestScoreElement) {
             bestScoreElement.textContent = this.bestScore;
         }
+        
+        // track highest tile achieved
+        if (window.gameStats) {
+            const highestTile = Math.max(...this.grid.flat())
+            window.gameStats.updateHighestTile(highestTile)
+        }
     }
 
     // timer functions
@@ -304,6 +328,10 @@ class Game {
                     this.stopTimer();
                     setTimeout(() => {
                         alert('⏰ Time\'s Up! You didn\'t reach the Whole Cake in time.\nFinal Score: ' + this.score);
+                        // save timeout to backend
+                        if (window.gameStats) {
+                            window.gameStats.saveGameResult(this.score, false)
+                        }
                     }, 100);
                 }
             }
@@ -385,6 +413,11 @@ class Game {
         this.updateScore();
         this.updateTimerDisplay();
         this.draw();
+        
+        // start new game session
+        if (window.gameStats) {
+            window.gameStats.startGame()
+        }
     }
 
 

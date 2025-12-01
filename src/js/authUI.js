@@ -86,12 +86,29 @@ class AuthUI {
   }
 
   // show the game screen
-  showGameScreen() {
+  async showGameScreen() {
     this.authScreen.style.display = 'none'
     this.gameScreen.style.display = 'block'
     
     // display username in menu
     this.updateUsername()
+    
+    // initialize game stats if not already done
+    if (!window.gameStats) {
+      window.gameStats = new GameStats()
+      
+      // make sure we have player ID
+      const playerId = getPlayerId()
+      if (!playerId) {
+        const username = localStorage.getItem('bakery_username')
+        if (username) {
+          await this.fetchAndSavePlayerId(username)
+        }
+      }
+      
+      // load player profile
+      await window.gameStats.loadPlayerProfile()
+    }
     
     // start the game if not already running
     if (!window.game) {
@@ -175,10 +192,18 @@ class AuthUI {
       if (this.isLoginMode) {
         result = await login(username, password)
         localStorage.setItem('bakery_username', result.username)
+        
+        // get player profile to save player ID
+        await this.fetchAndSavePlayerId(result.username)
+        
         this.showSuccess('Login successful! Redirecting...')
       } else {
         result = await register(username, email, password)
         localStorage.setItem('bakery_username', result.username)
+        
+        // get player profile to save player ID
+        await this.fetchAndSavePlayerId(result.username)
+        
         this.showSuccess('Account created! Redirecting...')
       }
       
@@ -245,6 +270,21 @@ class AuthUI {
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
+  }
+
+  // fetch player ID by username and save it
+  async fetchAndSavePlayerId(username) {
+    try {
+      const players = await getAllPlayers()
+      const currentPlayer = players.find(p => p.username === username)
+      
+      if (currentPlayer) {
+        setPlayerId(currentPlayer.id)
+        console.log('Player ID saved:', currentPlayer.id)
+      }
+    } catch (error) {
+      console.error('Failed to fetch player ID:', error)
+    }
   }
 }
 
