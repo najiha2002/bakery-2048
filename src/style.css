@@ -205,3 +205,279 @@ footer {
 footer p {
     margin: 0;
 }
+
+/* ==================== AUTH SCREEN STYLES ==================== */
+
+.auth-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 36px;
+    color: #302e2c;
+    margin-bottom: 10px;
+}
+
+.auth-tagline {
+    color: #706b65;
+    font-size: 14px;
+}
+
+.auth-form h2 {
+    text-align: center;
+    color: #302e2c;
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #302e2c;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #8f7a66;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #8f7a66;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.auth-submit-btn:hover {
+    background-color: #9f8a76;
+}
+
+.auth-submit-btn:disabled {
+    background-color: #cdc1b4;
+    cursor: not-allowed;
+}
+
+.auth-toggle-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: #8f7a66;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+    text-decoration: underline;
+}
+
+.auth-toggle-btn:hover {
+    color: #9f8a76;
+}
+
+/* Messages */
+.message {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    display: none;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #3c3;
+    border: 1px solid #cfc;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin: 20px auto;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #8f7a66;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==================== FLOATING MENU BUTTON ==================== */
+
+.floating-menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #8f7a66;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-menu-btn:hover {
+    background-color: #9f8a76;
+    transform: scale(1.1);
+}
+
+.floating-menu-btn:active {
+    transform: scale(0.95);
+}
+
+/* Menu Dropdown */
+.menu-dropdown {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    min-width: 220px;
+    display: none;
+    overflow: hidden;
+    z-index: 999;
+    animation: slideDown 0.3s ease;
+}
+
+.menu-dropdown.active {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-header {
+    padding: 16px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.menu-username {
+    font-weight: 600;
+    color: #302e2c;
+    font-size: 14px;
+    display: block;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 15px;
+    color: #302e2c;
+}
+
+.menu-item:hover {
+    background-color: #f8f8f8;
+}
+
+.menu-item.logout {
+    color: #dc3545;
+    border-top: 1px solid #e0e0e0;
+}
+
+.menu-item.logout:hover {
+    background-color: #fee;
+}
+
+.menu-icon {
+    font-size: 18px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==================== GAME SCREEN ==================== */
+
+.game-screen {
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 30px 20px;
+    }
+    
+    .auth-header h1 {
+        font-size: 28px;
+    }
+    
+    .player-info-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
