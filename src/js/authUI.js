@@ -91,22 +91,19 @@ class AuthUI {
     this.gameScreen.style.display = 'block'
     
     // display username in menu
-    const token = getToken()
-    if (token) {
-      // decode JWT to get user info
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]))
-        if (payload.username) {
-          this.playerUsername.textContent = `Welcome, ${payload.username}!`
-        }
-      } catch (e) {
-        console.log('Could not decode token')
-      }
-    }
+    this.updateUsername()
     
     // start the game if not already running
     if (!window.game) {
       window.game = new Game('gameCanvas')
+    }
+  }
+
+  // update the displayed username
+  updateUsername() {
+    const username = localStorage.getItem('bakery_username')
+    if (username) {
+      this.playerUsername.textContent = `Welcome, ${username}!`
     }
   }
 
@@ -177,9 +174,11 @@ class AuthUI {
       let result
       if (this.isLoginMode) {
         result = await login(username, password)
+        localStorage.setItem('bakery_username', result.username)
         this.showSuccess('Login successful! Redirecting...')
       } else {
         result = await register(username, email, password)
+        localStorage.setItem('bakery_username', result.username)
         this.showSuccess('Account created! Redirecting...')
       }
       
@@ -199,6 +198,7 @@ class AuthUI {
     this.closeMenu()
     if (confirm('Are you sure you want to logout?')) {
       logout()
+      localStorage.removeItem('bakery_username')
       this.showAuthScreen()
       this.showSuccess('Logged out successfully')
     }
