@@ -26,6 +26,7 @@ class AuthUI {
     this.isLoginMode = true
     
     this.setupEventListeners()
+    this.updateFormUI() // set initial form state
     this.checkAuthStatus()
   }
 
@@ -119,18 +120,22 @@ class AuthUI {
 
   // update form labels and buttons based on mode
   updateFormUI() {
+    const emailGroup = this.emailInput.parentElement
+    
     if (this.isLoginMode) {
-      // login mode
+      // login mode - hide email field
       this.submitBtn.textContent = 'Login'
       this.toggleBtn.textContent = "Don't have an account? Register"
-      this.emailInput.parentElement.style.display = 'none'
-      this.authForm.querySelector('h2').textContent = 'Login to Bakery 2048'
+      emailGroup.style.display = 'none'
+      this.emailInput.removeAttribute('required')
+      this.authForm.querySelector('h2').textContent = 'Login'
     } else {
-      // register mode
+      // register mode - show email field
       this.submitBtn.textContent = 'Register'
       this.toggleBtn.textContent = 'Already have an account? Login'
-      this.emailInput.parentElement.style.display = 'block'
-      this.authForm.querySelector('h2').textContent = 'Create New Account'
+      emailGroup.style.display = 'block'
+      this.emailInput.setAttribute('required', 'required')
+      this.authForm.querySelector('h2').textContent = 'Register'
     }
   }
 
