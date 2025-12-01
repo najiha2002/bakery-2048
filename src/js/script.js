@@ -407,7 +407,13 @@ class Game {
     }
 }
 
-// initialize game when DOM loads
+// initialize game when DOM loads and user is authenticated
 document.addEventListener('DOMContentLoaded', () => {
-    const game = new Game('gameCanvas');
+    // Wait for auth check before initializing game
+    setTimeout(() => {
+        if (isAuthenticated()) {
+            const game = new Game('gameCanvas');
+            window.game = game; // Make game accessible globally
+        }
+    }, 100);
 });
