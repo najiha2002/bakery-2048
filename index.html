@@ -7,52 +7,146 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header-container">
-            <h1>🥐Bakery 512🥐</h1>
-            <div class="help-icon">
-                ❓
-                <div class="help-tooltip">
-                    <h3>Ingredients Levels</h3>
-                    <div class="recipe">🌾 Flour</div>
-                    <div class="recipe">🥚 Egg</div>
-                    <div class="recipe">🧈 Butter</div>
-                    <div class="recipe">🍬 Sugar</div>
-                    <div class="recipe">🍩 Donut</div>
-                    <div class="recipe">🍪 Cookie</div>
-                    <div class="recipe">🧁 Cupcake</div>
-                    <div class="recipe">🍰 Slice Cake</div>
-                    <div class="recipe">🎂 Whole Cake</div>
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>🥐 Bakery 2048 🥐</h1>
+                <p class="auth-tagline">Combine ingredients to create delicious treats!</p>
+            </div>
+            
+            <form id="authForm" class="auth-form">
+                <h2>Login to Bakery 2048</h2>
+                
+                <!-- Messages -->
+                <div id="errorMessage" class="message error-message"></div>
+                <div id="successMessage" class="message success-message"></div>
+                
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-spinner"></div>
+                
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <!-- Email (hidden in login mode) -->
+                <div class="form-group" id="emailGroup">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                    >
+                </div>
+                
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password (min 8 chars)"
+                        required
+                        minlength="8"
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="auth-submit-btn">Login</button>
+                
+                <!-- Toggle between Login/Register -->
+                <button type="button" id="toggleAuthMode" class="auth-toggle-btn">
+                    Don't have an account? Register
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="game-screen" style="display: none;">
+        <div class="container">
+            <!-- Floating Menu Button -->
+            <button id="menuBtn" class="floating-menu-btn">☰</button>
+            
+            <!-- Dropdown Menu -->
+            <div id="menuDropdown" class="menu-dropdown">
+                <div class="menu-header">
+                    <span id="playerUsername" class="menu-username">Welcome, Player!</span>
+                </div>
+                <button id="helpBtn" class="menu-item">
+                    <span class="menu-icon">❓</span>
+                    <span>Help</span>
+                </button>
+                <button id="logoutBtn" class="menu-item logout">
+                    <span class="menu-icon">🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+
+            <div class="header-container">
+                <h1>🥐Bakery 512🥐</h1>
+                <div class="help-icon">
+                    ❓
+                    <div class="help-tooltip">
+                        <h3>Ingredients Levels</h3>
+                        <div class="recipe">🌾 Flour</div>
+                        <div class="recipe">🥚 Egg</div>
+                        <div class="recipe">🧈 Butter</div>
+                        <div class="recipe">🍬 Sugar</div>
+                        <div class="recipe">🍩 Donut</div>
+                        <div class="recipe">🍪 Cookie</div>
+                        <div class="recipe">🧁 Cupcake</div>
+                        <div class="recipe">🍰 Slice Cake</div>
+                        <div class="recipe">🎂 Whole Cake</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <p class="subtitle">Combine ingredients to create delicious treats!</p>
-        <p class="instructions">Use arrow keys to move and merge tiles</p>
-        <div class="challenge-info">⏰ Reach the Whole Cake before time runs out!</div>
-        <div class="scores">
-            <div class="score-container">
-                <div class="score-label">SCORE</div>
-                <div id="score" class="score-value">0</div>
+            <p class="subtitle">Combine ingredients to create delicious treats!</p>
+            <p class="instructions">Use arrow keys to move and merge tiles</p>
+            <div class="challenge-info">⏰ Reach the Whole Cake before time runs out!</div>
+            <div class="scores">
+                <div class="score-container">
+                    <div class="score-label">SCORE</div>
+                    <div id="score" class="score-value">0</div>
+                </div>
+                <div class="score-container">
+                    <div class="score-label">BEST</div>
+                    <div id="bestScore" class="score-value">0</div>
+                </div>
+                <div class="score-container timer-container">
+                    <div class="score-label">TIME</div>
+                    <div id="timer" class="score-value">7:00</div>
+                </div>
             </div>
-            <div class="score-container">
-                <div class="score-label">BEST</div>
-                <div id="bestScore" class="score-value">0</div>
+            <div class="game-board">
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
             </div>
-            <div class="score-container timer-container">
-                <div class="score-label">TIME</div>
-                <div id="timer" class="score-value">7:00</div>
-            </div>
+            
+            <button id="resetButton">New Game</button>
         </div>
-        <div class="game-board">
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
-        </div>
-        
-        <button id="resetButton">New Game</button>
     </div>
+
     <footer>
         <p>Built by Najiha. Inspired by the classic 2048 game.</p>
     </footer>
+    
+    <!-- Scripts -->
     <script src="src/js/constants.js"></script>
+    <script src="src/js/api.js"></script>
+    <script src="src/js/authUI.js"></script>
     <script src="src/js/script.js"></script>
 </body>
 </html>
