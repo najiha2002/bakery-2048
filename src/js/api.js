@@ -88,7 +88,6 @@ async function makeRequest(endpoint, method = 'GET', body = null, requiresAuth =
     error.data = errorData
     throw error
   } catch (error) {
-    console.error(`API Error [${method} ${endpoint}]:`, error)
     throw error
   }
 }
@@ -238,4 +237,3 @@ async function updatePowerUp(id, powerUpData) {
 async function deletePowerUp(id) {
   return await makeRequest(`/powerups/${id}`, 'DELETE')
 }
-

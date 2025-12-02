@@ -220,7 +220,12 @@ class AuthUI {
         this.showGameScreen()
       }, 1500)
     } catch (error) {
-      this.showError(error.message || 'Authentication failed')
+      // show specific error message based on status code
+      if (this.isLoginMode && error.status === 401) {
+        this.showError('Invalid username or password')
+      } else {
+        this.showError(error.message || 'Authentication failed')
+      }
     } finally {
       this.showLoading(false)
     }
