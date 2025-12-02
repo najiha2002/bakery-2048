@@ -40,6 +40,7 @@ class TilesLoader {
 
     // create mapping from tile values to API tiles
     const tileMap = {}
+    let maxTileValue = 512 // default winning tile
     
     this.tiles.forEach(tile => {
       // map tile value (2, 4, 8, etc.) to API tile data
@@ -49,6 +50,11 @@ class TilesLoader {
           emoji: tile.icon || tile.emoji || '',
           name: tile.itemName || tile.name || tile.label || `Tile ${value}`,
           color: tile.color || tile.backgroundColor || this.getDefaultColor(value)
+        }
+        
+        // track highest tile value
+        if (value > maxTileValue) {
+          maxTileValue = value
         }
       }
     })
@@ -66,7 +72,20 @@ class TilesLoader {
       COLORS[value] = tileMap[value].color
     })
 
+    // update game winning tile if game exists
+    if (window.game) {
+      window.game.winningTileValue = maxTileValue
+      
+      // update challenge info text
+      const challengeInfo = document.getElementById('challengeInfo')
+      if (challengeInfo) {
+        const winningTileName = TILE_LABELS[maxTileValue]?.name || `Tile ${maxTileValue}`
+        challengeInfo.textContent = `⏰ Reach the ${winningTileName} before time runs out!`
+      }
+    }
+
     console.log('Tiles applied to game:', Object.keys(tileMap).length, 'tiles updated')
+    console.log('Winning tile set to:', maxTileValue, TILE_LABELS[maxTileValue]?.name)
   }
 
   // fallback colors if API doesn't provide them
