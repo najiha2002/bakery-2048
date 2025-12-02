@@ -90,6 +90,10 @@
                     <span class="menu-icon">🏆</span>
                     <span>Leaderboard</span>
                 </button>
+                <button id="manageTilesBtn" class="menu-item">
+                    <span class="menu-icon">🎨</span>
+                    <span>Manage Tiles</span>
+                </button>
                 <button id="helpBtn" class="menu-item">
                     <span class="menu-icon">❓</span>
                     <span>Help</span>
@@ -130,6 +134,74 @@
                 </div>
             </div>
 
+            <!-- Tiles Management Modal -->
+            <div id="tilesModal" class="modal">
+                <div class="modal-content tiles-modal">
+                    <div class="modal-header">
+                        <h2>🎨 Manage Tiles</h2>
+                        <button class="modal-close" id="closeTiles">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="tiles-controls">
+                            <button id="addTileBtn" class="btn-primary">+ Add New Tile</button>
+                        </div>
+                        
+                        <div id="tilesLoading" class="tiles-loading">Loading...</div>
+                        <div id="tilesContent" class="tiles-content" style="display: none;">
+                            <div class="tiles-grid" id="tilesGrid">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div id="tilesError" class="tiles-error" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Tile Form Modal -->
+            <div id="tileFormModal" class="modal">
+                <div class="modal-content tile-form-modal">
+                    <div class="modal-header">
+                        <h2 id="tileFormTitle">Add New Tile</h2>
+                        <button class="modal-close" id="closeTileForm">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="tileForm" class="tile-form">
+                            <input type="hidden" id="tileId" />
+                            
+                            <div class="form-group">
+                                <label for="tileValue">Value *</label>
+                                <input type="number" id="tileValue" required placeholder="e.g., 2, 4, 8, 16">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tileName">Name *</label>
+                                <input type="text" id="tileName" required placeholder="e.g., Flour, Cookie">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tileEmoji">Emoji *</label>
+                                <input type="text" id="tileEmoji" required placeholder="e.g., 🌾, 🍪" maxlength="5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tileColor">Background Color</label>
+                                <input type="color" id="tileColor" value="#fcefe6">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tileDescription">Description</label>
+                                <textarea id="tileDescription" rows="3" placeholder="Optional description"></textarea>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" id="cancelTileForm" class="btn-secondary">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Tile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <div class="header-container">
                 <h1>🥐Bakery 512🥐</h1>
             </div>
@@ -165,9 +237,11 @@
     <!-- Scripts -->
     <script src="src/js/constants.js"></script>
     <script src="src/js/api.js"></script>
+    <script src="src/js/tilesLoader.js"></script>
     <script src="src/js/gameStats.js"></script>
     <script src="src/js/authUI.js"></script>
     <script src="src/js/leaderboard.js"></script>
+    <script src="src/js/tilesUI.js"></script>
     <script src="src/js/script.js"></script>
 </body>
 </html>
