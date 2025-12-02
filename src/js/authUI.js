@@ -114,6 +114,14 @@ class AuthUI {
     if (!window.game) {
       window.game = new Game('gameCanvas')
     }
+    
+    // check admin access for UI components (re-check in case role changed)
+    if (window.tilesUI) {
+      window.tilesUI.checkAdminAccess()
+    }
+    if (window.playersUI) {
+      window.playersUI.checkAdminAccess()
+    }
   }
 
   // update the displayed username
