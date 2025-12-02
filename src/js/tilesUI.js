@@ -221,17 +221,22 @@ class TilesUI {
     this.loadingEl.style.display = 'none'
     this.contentEl.style.display = 'block'
     
-    // show admin-only message for players
+    // show admin-only message for players (only once)
     if (isPlayerOnly) {
-      const message = document.createElement('div')
-      message.style.marginTop = '20px'
-      message.style.padding = '15px'
-      message.style.backgroundColor = '#fff3cd'
-      message.style.borderRadius = '6px'
-      message.style.textAlign = 'center'
-      message.style.color = '#856404'
-      message.textContent = '⛔ Only Admins can edit or delete tiles'
-      this.contentEl.appendChild(message)
+      // check if message already exists
+      const existingMessage = this.contentEl.querySelector('.admin-only-message')
+      if (!existingMessage) {
+        const message = document.createElement('div')
+        message.className = 'admin-only-message'
+        message.style.marginTop = '20px'
+        message.style.padding = '15px'
+        message.style.backgroundColor = '#fff3cd'
+        message.style.borderRadius = '6px'
+        message.style.textAlign = 'center'
+        message.style.color = '#856404'
+        message.textContent = '⛔ Only Admins can edit or delete tiles'
+        this.contentEl.appendChild(message)
+      }
     }
   }
   
