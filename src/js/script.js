@@ -25,6 +25,7 @@ class Game {
         this.gameOver = false;
         this.gameWon = false;
         this.timerStarted = false; // track if timer has started
+        this.winningTileValue = 512; // default, will be updated from API
         
         // initialize game stats tracking
         if (window.gameStats) {
@@ -166,7 +167,8 @@ class Game {
                 this.gameWon = true;
                 this.stopTimer();
                 setTimeout(() => {
-                    alert('🎉 Congratulations! You reached the Whole Cake! 🥧\nTime: ' + this.formatTime(this.timeLimit - this.timeRemaining));
+                    const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
+                    alert(`🎉 Congratulations! You reached the ${winningTileName}! 🥧\nTime: ` + this.formatTime(this.timeLimit - this.timeRemaining));
                     // save win to backend
                     if (window.gameStats) {
                         window.gameStats.saveGameResult(this.score, true)
@@ -327,7 +329,8 @@ class Game {
                     this.gameOver = true;
                     this.stopTimer();
                     setTimeout(() => {
-                        alert('⏰ Time\'s Up! You didn\'t reach the Whole Cake in time.\nFinal Score: ' + this.score);
+                        const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
+                        alert(`⏰ Time's Up! You didn't reach the ${winningTileName} in time.\nFinal Score: ` + this.score);
                         // save timeout to backend
                         if (window.gameStats) {
                             window.gameStats.saveGameResult(this.score, false)
@@ -381,7 +384,7 @@ class Game {
     checkWin() {
         for (let i = 0; i < GRID_SIZE; i++) {
             for (let j = 0; j < GRID_SIZE; j++) {
-                if (this.grid[i][j] === 512) {
+                if (this.grid[i][j] === this.winningTileValue) {
                     return true; // player has won
                 }
             }
