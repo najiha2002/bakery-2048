@@ -22,6 +22,24 @@ function clearToken() {
   localStorage.removeItem(PLAYER_ID_STORAGE_KEY)
 }
 
+// get user role from JWT token
+function getUserRole() {
+  const token = getToken()
+  if (!token) return 'Player'
+  
+  try {
+    const decoded = JSON.parse(atob(token.split('.')[1]))
+    return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'Player'
+  } catch (e) {
+    return 'Player'
+  }
+}
+
+// check if user is admin
+function isAdmin() {
+  return getUserRole() === 'Admin'
+}
+
 // core function to make HTTP requests to the backend
 async function makeRequest(endpoint, method = 'GET', body = null, requiresAuth = true) {
   const url = `${API_BASE_URL}${endpoint}`

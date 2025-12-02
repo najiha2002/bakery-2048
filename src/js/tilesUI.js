@@ -81,10 +81,24 @@ class TilesUI {
   show() {
     this.modal.classList.add('show')
     this.loadTiles()
+    this.checkAdminAccess()
   }
-  
+
   hide() {
     this.modal.classList.remove('show')
+  }
+
+  // check if user is admin and disable buttons accordingly
+  checkAdminAccess() {
+    const isPlayerOnly = !isAdmin()
+    
+    // disable add tile button for players
+    if (this.addTileBtn) {
+      this.addTileBtn.disabled = isPlayerOnly
+      this.addTileBtn.style.opacity = isPlayerOnly ? '0.5' : '1'
+      this.addTileBtn.style.cursor = isPlayerOnly ? 'not-allowed' : 'pointer'
+      this.addTileBtn.title = isPlayerOnly ? 'Only Admins can add tiles' : ''
+    }
   }
   
   showTileForm(tile = null) {
@@ -148,6 +162,8 @@ class TilesUI {
   renderTiles(tiles) {
     this.tilesGrid.innerHTML = ''
     
+    const isPlayerOnly = !isAdmin()
+    
     tiles.forEach(tile => {
       const tileValue = tile.value || tile.tileValue
       const tileName = tile.itemName || tile.name || tile.label || `Tile ${tileValue}`
@@ -159,6 +175,17 @@ class TilesUI {
       card.className = 'tile-card'
       card.style.backgroundColor = tileColor
       
+      // if player only, disable edit/delete buttons
+      const editDeleteHtml = isPlayerOnly 
+        ? `
+          <button class="tile-action-btn tile-edit-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Only Admins can edit">Edit</button>
+          <button class="tile-action-btn tile-delete-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Only Admins can delete">Delete</button>
+        `
+        : `
+          <button class="tile-action-btn tile-edit-btn" data-id="${tile.id}">Edit</button>
+          <button class="tile-action-btn tile-delete-btn" data-id="${tile.id}">Delete</button>
+        `
+      
       card.innerHTML = `
         <div class="tile-card-header">
           <span class="tile-emoji">${tileEmoji}</span>
@@ -169,28 +196,43 @@ class TilesUI {
           ${tileDesc ? `<div class="tile-description">${this.escapeHtml(tileDesc)}</div>` : ''}
         </div>
         <div class="tile-card-footer">
-          <button class="tile-action-btn tile-edit-btn" data-id="${tile.id}">Edit</button>
-          <button class="tile-action-btn tile-delete-btn" data-id="${tile.id}">Delete</button>
+          ${editDeleteHtml}
         </div>
       `
       
-      // edit button
-      const editBtn = card.querySelector('.tile-edit-btn')
-      editBtn.addEventListener('click', () => {
-        this.showTileForm(tile)
-      })
-      
-      // delete button
-      const deleteBtn = card.querySelector('.tile-delete-btn')
-      deleteBtn.addEventListener('click', () => {
-        this.handleDelete(tile)
-      })
+      // only add listeners if admin
+      if (!isPlayerOnly) {
+        // edit button
+        const editBtn = card.querySelector('.tile-edit-btn')
+        editBtn.addEventListener('click', () => {
+          this.showTileForm(tile)
+        })
+        
+        // delete button
+        const deleteBtn = card.querySelector('.tile-delete-btn')
+        deleteBtn.addEventListener('click', () => {
+          this.handleDelete(tile)
+        })
+      }
       
       this.tilesGrid.appendChild(card)
     })
     
     this.loadingEl.style.display = 'none'
     this.contentEl.style.display = 'block'
+    
+    // show admin-only message for players
+    if (isPlayerOnly) {
+      const message = document.createElement('div')
+      message.style.marginTop = '20px'
+      message.style.padding = '15px'
+      message.style.backgroundColor = '#fff3cd'
+      message.style.borderRadius = '6px'
+      message.style.textAlign = 'center'
+      message.style.color = '#856404'
+      message.textContent = '⛔ Only Admins can edit or delete tiles'
+      this.contentEl.appendChild(message)
+    }
   }
   
   async handleFormSubmit() {
