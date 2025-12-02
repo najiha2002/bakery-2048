@@ -828,6 +828,126 @@ footer p {
     margin-top: 20px;
 }
 
+/* ==================== PLAYERS MANAGEMENT MODAL ==================== */
+
+.players-modal {
+    max-width: 900px;
+}
+
+.players-loading,
+.players-error {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 16px;
+    color: #706b65;
+}
+
+.players-error {
+    color: #dc3545;
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.player-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.player-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.player-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f9f6f2;
+}
+
+.player-rank {
+    font-size: 14px;
+    font-weight: bold;
+    color: #8f7a66;
+    background: #f9f6f2;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.player-username {
+    font-size: 16px;
+    font-weight: 700;
+    color: #302e2c;
+    flex: 1;
+    margin-left: 10px;
+    word-break: break-word;
+}
+
+.player-card-body {
+    margin-bottom: 12px;
+}
+
+.player-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+}
+
+.stat-label {
+    color: #706b65;
+    font-weight: 600;
+}
+
+.stat-value {
+    color: #302e2c;
+    font-weight: 700;
+}
+
+.player-card-footer {
+    display: flex;
+    gap: 8px;
+}
+
+.player-action-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.player-view-btn {
+    background-color: #8f7a66;
+    color: white;
+}
+
+.player-view-btn:hover {
+    background-color: #7d6a59;
+}
+
+.player-delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.player-delete-btn:hover {
+    background-color: #c82333;
+}
+
 /* ==================== GAME SCREEN ==================== */
 
 .game-screen {

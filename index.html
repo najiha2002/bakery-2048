@@ -90,6 +90,10 @@
                     <span class="menu-icon">🏆</span>
                     <span>Leaderboard</span>
                 </button>
+                <button id="managePlayersBtn" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span>Manage Players</span>
+                </button>
                 <button id="manageTilesBtn" class="menu-item">
                     <span class="menu-icon">🎨</span>
                     <span>Manage Tiles</span>
@@ -202,6 +206,25 @@
                 </div>
             </div>
 
+            <!-- Players Management Modal -->
+            <div id="playersModal" class="modal">
+                <div class="modal-content players-modal">
+                    <div class="modal-header">
+                        <h2>👥 Manage Players</h2>
+                        <button class="modal-close" id="closePlayers">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="playersLoading" class="players-loading">Loading...</div>
+                        <div id="playersContent" class="players-content" style="display: none;">
+                            <div class="players-grid" id="playersGrid">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div id="playersError" class="players-error" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="header-container">
                 <h1>🥐Bakery 512🥐</h1>
             </div>
@@ -242,6 +265,7 @@
     <script src="src/js/authUI.js"></script>
     <script src="src/js/leaderboard.js"></script>
     <script src="src/js/tilesUI.js"></script>
+    <script src="src/js/playersUI.js"></script>
     <script src="src/js/script.js"></script>
 </body>
 </html>
