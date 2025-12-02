@@ -6,7 +6,10 @@ class GameStats {
     this.startTime = null
     this.moveCount = 0
     this.highestTile = 0
+    this.autoSaveInterval = null
+    this.lastSaveTime = null
     this.loadPlayerProfile()
+    this.setupAutoSave()
   }
 
   // load player profile when game starts
@@ -37,6 +40,7 @@ class GameStats {
     this.startTime = Date.now()
     this.moveCount = 0
     this.highestTile = 0
+    this.startAutoSave()
   }
 
   // increment move counter
@@ -116,6 +120,9 @@ class GameStats {
       const result = await updatePlayer(this.playerId, updateData)
       
       console.log('Game stats saved successfully:', result)
+      
+      // stop auto-save since game ended
+      this.stopAutoSave()
     } catch (error) {
       console.error('Failed to save game stats:', error)
     }
@@ -129,6 +136,115 @@ class GameStats {
       return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2])
     }
     return 0
+  }
+
+  // setup auto-save on page unload
+  setupAutoSave() {
+    window.addEventListener('beforeunload', () => {
+      this.saveProgressBeforeUnload()
+    })
+  }
+
+  // start periodic auto-save (every 30 seconds)
+  startAutoSave() {
+    this.stopAutoSave() // clear any existing interval
+    this.autoSaveInterval = setInterval(() => {
+      this.autoSaveProgress()
+    }, 30000) // 30 seconds
+  }
+
+  // stop auto-save interval
+  stopAutoSave() {
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval)
+      this.autoSaveInterval = null
+    }
+  }
+
+  // auto-save current progress (non-blocking)
+  async autoSaveProgress() {
+    if (!isAuthenticated() || !this.playerId || !this.startTime) return
+
+    // don't save if game just started (less than 10 seconds)
+    const playTime = this.getPlayTime()
+    if (playTime < 10) return
+
+    try {
+      const currentPlayer = await getPlayerById(this.playerId)
+      const totalPlayTime = this.formatPlayTime(
+        this.parsePlayTime(currentPlayer.totalPlayTime) + playTime
+      )
+
+      const updateData = {
+        currentScore: currentPlayer.currentScore || 0,
+        highestScore: currentPlayer.highestScore || 0,
+        bestTileAchieved: Math.max(this.highestTile, currentPlayer.bestTileAchieved || 0),
+        level: currentPlayer.level || 1,
+        gamesPlayed: currentPlayer.gamesPlayed || 0,
+        averageScore: currentPlayer.averageScore || 0,
+        totalPlayTime: totalPlayTime,
+        winStreak: currentPlayer.winStreak || 0,
+        totalMoves: (currentPlayer.totalMoves || 0) + this.moveCount,
+        powerUpsUsed: currentPlayer.powerUpsUsed || 0,
+        favoriteItem: currentPlayer.favoriteItem || null
+      }
+
+      await updatePlayer(this.playerId, updateData)
+      this.lastSaveTime = Date.now()
+      console.log('Progress auto-saved')
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    }
+  }
+
+  // save progress synchronously on page unload
+  saveProgressBeforeUnload() {
+    if (!isAuthenticated() || !this.playerId || !this.startTime) return
+
+    const playTime = this.getPlayTime()
+    if (playTime < 5) return // don't save very short sessions
+
+    // use synchronous XMLHttpRequest for beforeunload
+    try {
+      const token = getToken()
+      if (!token) return
+
+      const xhr = new XMLHttpRequest()
+      xhr.open('GET', `${API_BASE_URL}/players/${this.playerId}`, false)
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+      xhr.send()
+
+      if (xhr.status === 200) {
+        const currentPlayer = JSON.parse(xhr.responseText)
+        const totalPlayTime = this.formatPlayTime(
+          this.parsePlayTime(currentPlayer.totalPlayTime) + playTime
+        )
+
+        const updateData = {
+          currentScore: currentPlayer.currentScore || 0,
+          highestScore: currentPlayer.highestScore || 0,
+          bestTileAchieved: Math.max(this.highestTile, currentPlayer.bestTileAchieved || 0),
+          level: currentPlayer.level || 1,
+          gamesPlayed: currentPlayer.gamesPlayed || 0,
+          averageScore: currentPlayer.averageScore || 0,
+          totalPlayTime: totalPlayTime,
+          winStreak: currentPlayer.winStreak || 0,
+          totalMoves: (currentPlayer.totalMoves || 0) + this.moveCount,
+          powerUpsUsed: currentPlayer.powerUpsUsed || 0,
+          favoriteItem: currentPlayer.favoriteItem || null
+        }
+
+        const updateXhr = new XMLHttpRequest()
+        updateXhr.open('PUT', `${API_BASE_URL}/players/${this.playerId}`, false)
+        updateXhr.setRequestHeader('Authorization', `Bearer ${token}`)
+        updateXhr.setRequestHeader('Content-Type', 'application/json')
+        updateXhr.send(JSON.stringify(updateData))
+
+        console.log('Progress saved on unload')
+      }
+    } catch (error) {
+      console.error('Failed to save on unload:', error)
+    }
   }
 
   // get player ID from backend after login
