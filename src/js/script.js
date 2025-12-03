@@ -15,8 +15,11 @@ class Game {
 
         // initialize game state
         this.score = 0;
-        this.bestScore = this.loadBestScore();
+        this.bestScore = 0; // will be loaded from API via gameStats
         this.grid = this.createEmptyGrid();
+        
+        // load best score from API
+        this.loadBestScore();
         
         // timer variables
         this.timeLimit = 420; // 7 minutes in seconds
@@ -307,9 +310,9 @@ class Game {
         }
         
         // update best score if current score is higher
+        // Note: best score will be saved to backend when game ends via gameStats
         if (this.score > this.bestScore) {
             this.bestScore = this.score;
-            this.saveBestScore();
         }
         
         const bestScoreElement = document.getElementById('bestScore');
@@ -409,16 +412,29 @@ class Game {
         return false;
     }
 
-    // Load best score from localStorage
-    loadBestScore() {
-        const saved = localStorage.getItem('bakery2048-bestScore');
-        return saved ? parseInt(saved) : 0;
+    // Load best score from API via gameStats
+    async loadBestScore() {
+        if (!window.gameStats || !isAuthenticated()) {
+            this.bestScore = 0;
+            this.updateScore();
+            return;
+        }
+        
+        try {
+            const playerId = getPlayerId();
+            if (playerId) {
+                const player = await getPlayerById(playerId);
+                this.bestScore = player.highestScore || 0;
+                this.updateScore(); // update display
+            }
+        } catch (error) {
+            console.error('Failed to load best score:', error);
+            this.bestScore = 0;
+        }
     }
 
-    // Save best score to localStorage
-    saveBestScore() {
-        localStorage.setItem('bakery2048-bestScore', this.bestScore.toString());
-    }
+    // Best score is automatically saved via gameStats.saveGameResult()
+    // No need for separate save method
 
     resetGame() {
         this.stopTimer();
