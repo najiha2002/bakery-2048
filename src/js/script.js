@@ -32,6 +32,9 @@ class Game {
         this.gameOverTimeout = null; // track pending game over alert
         this.winTimeout = null; // track pending win alert
         
+        // load winning tile value from API
+        this.loadWinningTile();
+        
         // initialize game stats tracking
         if (window.gameStats) {
             window.gameStats.startGame()
@@ -430,6 +433,45 @@ class Game {
         } catch (error) {
             console.error('Failed to load best score:', error);
             this.bestScore = 0;
+        }
+    }
+
+    // Load winning tile value from API
+    async loadWinningTile() {
+        if (!isAuthenticated()) {
+            this.winningTileValue = 512; // default
+            this.updateChallengeText();
+            return;
+        }
+        
+        try {
+            const tiles = await getAllTiles();
+            if (tiles && tiles.length > 0) {
+                // find the highest tile value
+                let maxTileValue = 512; // default
+                tiles.forEach(tile => {
+                    const value = tile.tileValue || tile.value;
+                    if (value && value > maxTileValue) {
+                        maxTileValue = value;
+                    }
+                });
+                
+                this.winningTileValue = maxTileValue;
+                this.updateChallengeText();
+                console.log('Winning tile loaded from API:', maxTileValue, TILE_LABELS[maxTileValue]?.name);
+            }
+        } catch (error) {
+            console.error('Failed to load winning tile:', error);
+            this.winningTileValue = 512; // fallback
+        }
+    }
+    
+    // Update challenge text with winning tile name
+    updateChallengeText() {
+        const challengeInfo = document.getElementById('challengeInfo');
+        if (challengeInfo) {
+            const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
+            challengeInfo.textContent = `⏰ Reach the ${winningTileName} before time runs out!`;
         }
     }
 
