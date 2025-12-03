@@ -93,6 +93,18 @@ class AuthUI {
     // display username in menu
     this.updateUsername()
     
+    // get current username
+    const currentUsername = localStorage.getItem('bakery_username')
+    
+    // check if different user logged in - if so, trigger game reset
+    if (window.currentGameUsername && window.currentGameUsername !== currentUsername) {
+      // dispatch event for game to handle its own cleanup
+      window.dispatchEvent(new CustomEvent('userChanged'))
+    }
+    
+    // remember current username
+    window.currentGameUsername = currentUsername
+    
     // initialize game stats if not already done
     if (!window.gameStats) {
       window.gameStats = new GameStats()
@@ -110,9 +122,16 @@ class AuthUI {
       await window.gameStats.loadPlayerProfile()
     }
     
-    // start the game if not already running
-    if (!window.game) {
-      window.game = new Game('gameCanvas')
+    // dispatch event to signal game screen is ready
+    // this ensures game is created even on fresh login
+    window.dispatchEvent(new CustomEvent('gameScreenReady'))
+    
+    // check admin access for UI components (re-check in case role changed)
+    if (window.tilesUI) {
+      window.tilesUI.checkAdminAccess()
+    }
+    if (window.playersUI) {
+      window.playersUI.checkAdminAccess()
     }
   }
 
@@ -224,6 +243,11 @@ class AuthUI {
     if (confirm('Are you sure you want to logout?')) {
       logout()
       localStorage.removeItem('bakery_username')
+      
+      // dispatch event for game to handle cleanup
+      window.dispatchEvent(new CustomEvent('userLogout'))
+      window.currentGameUsername = null
+      
       this.showAuthScreen()
       this.showSuccess('Logged out successfully')
     }

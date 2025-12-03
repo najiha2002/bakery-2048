@@ -26,6 +26,8 @@ class Game {
         this.gameWon = false;
         this.timerStarted = false; // track if timer has started
         this.winningTileValue = 512; // default, will be updated from API
+        this.gameOverTimeout = null; // track pending game over alert
+        this.winTimeout = null; // track pending win alert
         
         // initialize game stats tracking
         if (window.gameStats) {
@@ -162,28 +164,34 @@ class Game {
                 window.gameStats.recordMove()
             }
             
-            // check win/game over conditions
+            // check win condition
             if (this.checkWin() && !this.gameWon) {
                 this.gameWon = true;
                 this.stopTimer();
-                setTimeout(() => {
-                    const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
-                    alert(`🎉 Congratulations! You reached the ${winningTileName}! 🥧\nTime: ` + this.formatTime(this.timeLimit - this.timeRemaining));
-                    // save win to backend
-                    if (window.gameStats) {
-                        window.gameStats.saveGameResult(this.score, true)
-                    }
-                }, 100);
-            } else if (this.checkGameOver() && !this.gameOver) {
+                const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
+                alert(`🎉 Congratulations! You reached the ${winningTileName}! 🥧\nTime: ` + this.formatTime(this.timeLimit - this.timeRemaining));
+                // save win to backend
+                if (window.gameStats) {
+                    window.gameStats.saveGameResult(this.score, true)
+                }
+            }
+            
+            // check game over after spawning new tile
+            // only check if game isn't already won
+            if (!this.gameWon && !this.gameOver && this.checkGameOver()) {
+                console.log('checkGameOver returned TRUE - Game is truly over');
+                // Set flag IMMEDIATELY to block further input
                 this.gameOver = true;
                 this.stopTimer();
-                setTimeout(() => {
+                
+                // Use requestAnimationFrame to ensure the final draw is complete
+                requestAnimationFrame(() => {
                     alert('Game Over! No more moves possible.');
                     // save loss to backend
                     if (window.gameStats) {
                         window.gameStats.saveGameResult(this.score, false)
                     }
-                }, 100);
+                });
             }
         }
     }
@@ -362,22 +370,31 @@ class Game {
     }
 
     checkGameOver() {
-        // check if any moves are possible
+        // First check if there are any empty cells
         for (let i = 0; i < GRID_SIZE; i++) {
             for (let j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] === 0) {
                     return false; // empty cell found, game not over
                 }
+            }
+        }
+        
+        // Then check if any adjacent tiles can merge
+        for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+                const currentValue = this.grid[i][j];
+                
                 // check right neighbor
-                if (j < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i][j + 1]) {
+                if (j < GRID_SIZE - 1 && currentValue === this.grid[i][j + 1]) {
                     return false;
                 }
                 // check down neighbor
-                if (i < GRID_SIZE - 1 && this.grid[i][j] === this.grid[i + 1][j]) {
+                if (i < GRID_SIZE - 1 && currentValue === this.grid[i + 1][j]) {
                     return false;
                 }
             }
         }
+        
         return true; // no moves left, game over
     }
 
@@ -425,31 +442,94 @@ class Game {
 
 
     setupInput() {
-        // keyboard input for arrow keys
-        document.addEventListener('keydown', (e) => {
+        // Store the handler so we can remove it later
+        this.keydownHandler = (e) => {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 e.preventDefault();
                 this.handleMove(e.key);
             }
-        });
-
-        // button input for reset
-        const resetButton = document.getElementById('resetButton');
-        if (resetButton) {
-            resetButton.addEventListener('click', () => {
-                this.resetGame();
-            });
+        };
+        
+        // keyboard input for arrow keys
+        document.addEventListener('keydown', this.keydownHandler);
+        
+        // Note: Reset button is handled globally in DOMContentLoaded
+    }
+    
+    // Clean up event listeners
+    cleanup() {
+        if (this.keydownHandler) {
+            document.removeEventListener('keydown', this.keydownHandler);
+        }
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
         }
     }
 }
 
 // initialize game when DOM loads and user is authenticated
 document.addEventListener('DOMContentLoaded', () => {
+    // Setup New Game button handler (works regardless of game state)
+    const resetButton = document.getElementById('resetButton');
+    if (resetButton) {
+        resetButton.addEventListener('click', () => {
+            if (window.game) {
+                window.game.resetGame();
+            } else if (isAuthenticated()) {
+                // Create game if it doesn't exist
+                const game = new Game('gameCanvas');
+                window.game = game;
+            }
+        });
+    }
+    
     // Wait for auth check before initializing game
     setTimeout(() => {
-        if (isAuthenticated()) {
+        if (isAuthenticated() && !window.game) {
             const game = new Game('gameCanvas');
             window.game = game; // Make game accessible globally
         }
     }, 100);
+});
+
+// Listen for user change events to cleanup and reinitialize game
+window.addEventListener('userChanged', () => {
+    if (window.game) {
+        if (window.game.cleanup) {
+            window.game.cleanup();
+        }
+        window.game = null;
+    }
+    if (window.gameStats) {
+        window.gameStats = null;
+    }
+    
+    // Reinitialize game for new user
+    setTimeout(() => {
+        if (isAuthenticated() && !window.game) {
+            const game = new Game('gameCanvas');
+            window.game = game;
+        }
+    }, 100);
+});
+
+// Listen for logout events to cleanup game
+window.addEventListener('userLogout', () => {
+    if (window.game) {
+        if (window.game.cleanup) {
+            window.game.cleanup();
+        }
+        window.game = null;
+    }
+    if (window.gameStats) {
+        window.gameStats = null;
+    }
+});
+
+// Listen for game screen ready event to create game if needed
+window.addEventListener('gameScreenReady', () => {
+    if (!window.game && isAuthenticated()) {
+        const game = new Game('gameCanvas');
+        window.game = game;
+    }
 });
