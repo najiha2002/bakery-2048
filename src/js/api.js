@@ -83,12 +83,12 @@ async function makeRequest(endpoint, method = 'GET', body = null, requiresAuth =
     
     // extract error message from response
     const errorData = await response.json().catch(() => ({}))
-    const error = new Error(errorData.error || 'API Error')
+    const error = new Error(errorData.message || errorData.error || 'API Error')
     error.status = response.status
     error.data = errorData
     throw error
   } catch (error) {
-    console.error(`API Error [${method} ${endpoint}]:`, error)
+    // console.error(`API Error [${method} ${endpoint}]:`, error)
     throw error
   }
 }
