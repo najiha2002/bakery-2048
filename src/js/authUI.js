@@ -231,7 +231,34 @@ class AuthUI {
         this.showGameScreen()
       }, 1500)
     } catch (error) {
-      this.showError(error.message || 'Authentication failed')
+      // provide user-friendly error messages
+      let errorMessage = 'Authentication failed'
+      
+      if (this.isLoginMode) {
+        // login errors
+        if (error.status === 401 || error.message?.toLowerCase().includes('invalid') || 
+            error.message?.toLowerCase().includes('unauthorized') ||
+            error.message?.toLowerCase().includes('password') ||
+            error.message?.toLowerCase().includes('credentials')) {
+          errorMessage = 'Invalid username or password'
+        } else if (error.message?.toLowerCase().includes('not found')) {
+          errorMessage = 'Invalid username or password'
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+      } else {
+        // registration errors
+        if (error.message?.toLowerCase().includes('already exists') || 
+            error.message?.toLowerCase().includes('duplicate')) {
+          errorMessage = 'Username or email already exists'
+        } else if (error.message?.toLowerCase().includes('invalid email')) {
+          errorMessage = 'Please enter a valid email address'
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+      }
+      
+      this.showError(errorMessage)
     } finally {
       this.showLoading(false)
     }
