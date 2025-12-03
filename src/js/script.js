@@ -15,8 +15,11 @@ class Game {
 
         // initialize game state
         this.score = 0;
-        this.bestScore = this.loadBestScore();
+        this.bestScore = 0; // will be loaded from API via gameStats
         this.grid = this.createEmptyGrid();
+        
+        // load best score from API
+        this.loadBestScore();
         
         // timer variables
         this.timeLimit = 420; // 7 minutes in seconds
@@ -28,6 +31,9 @@ class Game {
         this.winningTileValue = 512; // default, will be updated from API
         this.gameOverTimeout = null; // track pending game over alert
         this.winTimeout = null; // track pending win alert
+        
+        // load winning tile value from API
+        this.loadWinningTile();
         
         // initialize game stats tracking
         if (window.gameStats) {
@@ -307,9 +313,9 @@ class Game {
         }
         
         // update best score if current score is higher
+        // Note: best score will be saved to backend when game ends via gameStats
         if (this.score > this.bestScore) {
             this.bestScore = this.score;
-            this.saveBestScore();
         }
         
         const bestScoreElement = document.getElementById('bestScore');
@@ -409,16 +415,68 @@ class Game {
         return false;
     }
 
-    // Load best score from localStorage
-    loadBestScore() {
-        const saved = localStorage.getItem('bakery2048-bestScore');
-        return saved ? parseInt(saved) : 0;
+    // Load best score from API via gameStats
+    async loadBestScore() {
+        if (!window.gameStats || !isAuthenticated()) {
+            this.bestScore = 0;
+            this.updateScore();
+            return;
+        }
+        
+        try {
+            const playerId = getPlayerId();
+            if (playerId) {
+                const player = await getPlayerById(playerId);
+                this.bestScore = player.highestScore || 0;
+                this.updateScore(); // update display
+            }
+        } catch (error) {
+            console.error('Failed to load best score:', error);
+            this.bestScore = 0;
+        }
     }
 
-    // Save best score to localStorage
-    saveBestScore() {
-        localStorage.setItem('bakery2048-bestScore', this.bestScore.toString());
+    // Load winning tile value from API
+    async loadWinningTile() {
+        if (!isAuthenticated()) {
+            this.winningTileValue = 512; // default
+            this.updateChallengeText();
+            return;
+        }
+        
+        try {
+            const tiles = await getAllTiles();
+            if (tiles && tiles.length > 0) {
+                // find the highest tile value
+                let maxTileValue = 512; // default
+                tiles.forEach(tile => {
+                    const value = tile.tileValue || tile.value;
+                    if (value && value > maxTileValue) {
+                        maxTileValue = value;
+                    }
+                });
+                
+                this.winningTileValue = maxTileValue;
+                this.updateChallengeText();
+                console.log('Winning tile loaded from API:', maxTileValue, TILE_LABELS[maxTileValue]?.name);
+            }
+        } catch (error) {
+            console.error('Failed to load winning tile:', error);
+            this.winningTileValue = 512; // fallback
+        }
     }
+    
+    // Update challenge text with winning tile name
+    updateChallengeText() {
+        const challengeInfo = document.getElementById('challengeInfo');
+        if (challengeInfo) {
+            const winningTileName = TILE_LABELS[this.winningTileValue]?.name || `Tile ${this.winningTileValue}`;
+            challengeInfo.textContent = `⏰ Reach the ${winningTileName} before time runs out!`;
+        }
+    }
+
+    // Best score is automatically saved via gameStats.saveGameResult()
+    // No need for separate save method
 
     resetGame() {
         this.stopTimer();
