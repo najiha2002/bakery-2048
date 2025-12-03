@@ -86,6 +86,16 @@ async function makeRequest(endpoint, method = 'GET', body = null, requiresAuth =
     const error = new Error(errorData.message || errorData.error || 'API Error')
     error.status = response.status
     error.data = errorData
+    
+    // if unauthorized and not on auth endpoints, redirect to login
+    if (response.status === 401 && !endpoint.includes('/auth/')) {
+      clearToken()
+      if (window.authUI) {
+        window.authUI.showAuthScreen()
+        window.authUI.showError('Your session has expired. Please login again.')
+      }
+    }
+    
     throw error
   } catch (error) {
     // console.error(`API Error [${method} ${endpoint}]:`, error)
