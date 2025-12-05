@@ -22,7 +22,7 @@ class Game {
         this.loadBestScore();
         
         // timer variables
-        this.timeLimit = 420; // 7 minutes in seconds
+        this.timeLimit = 600; // 10 minutes in seconds
         this.timeRemaining = this.timeLimit;
         this.timerInterval = null;
         this.gameOver = false;
