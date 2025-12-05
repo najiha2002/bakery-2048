@@ -263,7 +263,20 @@ class TilesUI {
       
     } catch (error) {
       console.error('Failed to save tile:', error)
-      alert('Failed to save tile. Please try again.')
+      
+      // Extract error message from API response
+      let errorMessage = 'Failed to save tile.'
+      
+      if (error.data && error.data.errors) {
+        // Handle validation errors from API
+        const errors = error.data.errors
+        const errorMessages = Object.values(errors).flat()
+        errorMessage = errorMessages.join('\n')
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      alert(errorMessage)
     }
   }
   
